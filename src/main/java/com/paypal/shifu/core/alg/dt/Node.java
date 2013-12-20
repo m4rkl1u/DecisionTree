@@ -24,7 +24,7 @@ public class Node {
 	 * @param value for this column, 
 	 * @param target 0,1 pair
 	 */
-	public void doCalculate(String[] values, int[] targets) {
+	public double doCalculate(String[] values, int[] targets) {
 		Map<String, Pair> categories = new HashMap<String, Pair>();
 		
 		long neg = 0, pos = 0;
@@ -48,7 +48,16 @@ public class Node {
 			categories.put(value, pair);
 		}
 		
+		//the main gain
+		double gain = -(neg / values.length) * Math.log(neg / values.length) / Math.log(2) 
+					  -(pos / values.length) * Math.log(pos / values.length) / Math.log(2); 
 		
+		for(Object o : categories.values()){
+			Pair pair = (Pair) o;
+			gain = gain - (pair.getTotal() / values.length )* pair.getEntropy();
+		}
+		
+		return gain;
 	}
 	
 	public class Pair {
@@ -82,7 +91,7 @@ public class Node {
 			double posE = (double) (pos / total)  * Math.log(pos / total);
 			double negE = (double) (neg / total)  * Math.log(neg / total);
 			
-			return (posE + negE) / Math.log(2);
+			return -(posE + negE) / Math.log(2);
 		}
 		
 		public double getTotal(){

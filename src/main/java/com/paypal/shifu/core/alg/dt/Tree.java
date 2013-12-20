@@ -4,5 +4,9 @@ public class Tree {
 
 	private Node root;
 	
+	private String[] attributes;
+	
+
+	
 	
 }
