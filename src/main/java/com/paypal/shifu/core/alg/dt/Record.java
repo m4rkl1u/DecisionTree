@@ -1,30 +1,44 @@
 package com.paypal.shifu.core.alg.dt;
 
+import java.util.Map;
+
 public class Record{
-	private String[] value;
-	private boolean isInverse = false;
-	/**
-	 * @return the isInverse
-	 */
-	public boolean isInverse() {
-		return isInverse;
+	
+	private Map<String, String> value;
+	private String target;
+	
+	public Record(Map<String, String> value) {
+		super();
+		this.value = value;
 	}
-	/**
-	 * @param isInverse the isInverse to set
-	 */
-	public void setInverse(boolean isInverse) {
-		this.isInverse = isInverse;
+	
+	public void setTargetColName(String name){
+		target = name;
 	}
+	
+	public String getTargetColName() {
+		return target;
+	}
+	
+	public String getTarget(){
+		return value.get(target);
+	}
+
 	/**
 	 * @return the value
 	 */
-	public String[] getValue() {
+	public Map<String, String> getAttribute() {
 		return value;
 	}
+
 	/**
 	 * @param value the value to set
 	 */
-	public void setValue(String[] value) {
+	public void setAttribute(Map<String, String> value) {
 		this.value = value;
+	}
+	
+	public String getAttribute(String name){
+		return value.get(name);
 	}
 }

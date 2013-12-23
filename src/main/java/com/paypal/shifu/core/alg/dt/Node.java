@@ -4,139 +4,133 @@ import java.util.*;
 
 public class Node {
 	
+	//key value define the path
+	private String name;
+	private String category;
+	
 	private Node parent;
-	private String colName;
-	private int index;
-	private Node[] children;
+	private List<Node> children;
+
+	private List<Record> data;
 	
-	private List<Pair> counts;
+	private Set<String> categories;
 	
-	private boolean isLeaf;
+	//total entropy
+	private double entropy;
 	
-	public Node(String name, int index){
-		this.isLeaf = false;
-		this.colName   = name;
-		this.index  = index;
+	private boolean isUsed;
+	
+	public Node() {
+		data = new ArrayList<Record>();
+		categories = new HashSet<String>();
+		children = new ArrayList<Node>();
+		setEntropy(0.0);
 	}
 	
 	/**
-	 * the value size should be equal to target size
-	 * @param value for this column, 
-	 * @param target 0,1 pair
+	 * @return the parent
 	 */
-	public double doCalculate(String[] values, int[] targets) {
-		Map<String, Pair> categories = new HashMap<String, Pair>();
-		
-		long neg = 0, pos = 0;
-		
-		for(int i = 0 ; i < values.length; i ++) {
-			String value = values[i];
-			int target   = targets[i];
-			Pair pair    = null;
-			if(categories.containsKey(value)) {
-				pair = categories.get(value);
-			} else {
-				pair = new Pair(value);
-			}
-			if(target == 1){
-				pair.increasePos();
-				pos ++;
-			} else if(target == 0) {
-				pair.increaseNeg();
-				neg ++;
-			}
-			categories.put(value, pair);
-		}
-		
-		//the main gain
-		double gain = -(neg / values.length) * Math.log(neg / values.length) / Math.log(2) 
-					  -(pos / values.length) * Math.log(pos / values.length) / Math.log(2); 
-		
-		for(Object o : categories.values()){
-			Pair pair = (Pair) o;
-			gain = gain - (pair.getTotal() / values.length )* pair.getEntropy();
-		}
-		
-		return gain;
+	public Node getParent() {
+		return parent;
+	}
+
+	/**
+	 * @param parent the parent to set
+	 */
+	public void setParent(Node parent) {
+		this.parent = parent;
 	}
 	
-	public class Pair {
-		
-		private String div;
-		private long pos;
-		private long neg;
-		
-		public Pair(String name){
-			this.pos = 0;
-			this.neg = 0;
-			this.div = name;
-		}
-		
-		public void increasePos(){
-			if(pos < Long.MAX_VALUE) this.pos ++;
-		}
-		
-		public void increaseNeg(){
-			if(neg < Long.MAX_VALUE) this.neg ++;
-		}
+	/**
+	 * @return the data
+	 */
+	public List<Record> getData() {
+		return data;
+	}
 
-		private Node getOuterType() {
-			return Node.this;
-		}
-		
-		public double getEntropy(){
-			if(neg == 0 || pos == 0) return 0.;
-			
-			double total = getTotal();
-			double posE = (double) (pos / total)  * Math.log(pos / total);
-			double negE = (double) (neg / total)  * Math.log(neg / total);
-			
-			return -(posE + negE) / Math.log(2);
-		}
-		
-		public double getTotal(){
-			return (double)(pos + neg);
-		}
-		
-		/* (non-Javadoc)
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + ((div == null) ? 0 : div.hashCode());
-			result = prime * result + (int) (neg ^ (neg >>> 32));
-			result = prime * result + (int) (pos ^ (pos >>> 32));
-			return result;
-		}
+	/**
+	 * @param data the data to set
+	 */
+	public void setData(List<Record> data) {
+		this.data = data;
+	}
 
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Pair other = (Pair) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (div == null) {
-				if (other.div != null)
-					return false;
-			} else if (!div.equals(other.div))
-				return false;
-			if (neg != other.neg)
-				return false;
-			if (pos != other.pos)
-				return false;
-			return true;
-		}
+	/**
+	 * @return the entropy
+	 */
+	public double getEntropy() {
+		return entropy;
+	}
 
+	/**
+	 * @param entropy the entropy to set
+	 */
+	public void setEntropy(double entropy) {
+		this.entropy = entropy;
+	}
+
+	/**
+	 * @return the isUsed
+	 */
+	public boolean isUsed() {
+		return isUsed;
+	}
+
+	/**
+	 * @param isUsed the isUsed to set
+	 */
+	public void setUsed(boolean isUsed) {
+		this.isUsed = isUsed;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getChildrenSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/**
+	 * @return the category
+	 */
+	public String getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public Set<String> doDivide() {
+		
+		if(categories.size() != 0) {
+			return this.categories;
+		}
+		
+		for(int i = 0 ; i < this.data.size(); i ++) {
+			Record r = data.get(i);
+			this.categories.add(r.getAttribute(this.name));
+		}
+		
+		return this.categories;
+	}
+
+	public void addChild(Node child) {
+		this.children.add(child);
 	}
 }
